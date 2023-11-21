@@ -1,15 +1,19 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import routes from "./src/routes";
+import db from "./src/data/database";
+import contactUsRoutes from "./src/routes/contactUs";
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT;
-app.use(routes);
-app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
-});
+const PORT = process.env.PORT || 8000;
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+db.once("open", () => {
+  console.log("Connected to MongoDB");
+  app.use(express.json());
+
+  app.use("/contactUs", contactUsRoutes);
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
